@@ -1,5 +1,6 @@
 package org.horosiyproekt.test;
 
+import org.horosiyproekt.enums.OrderBtnPlace;
 import org.horosiyproekt.pages.HomePage;
 import org.horosiyproekt.pages.OrderPage;
 import org.junit.After;
@@ -28,6 +29,7 @@ public class OrderTest {
     private final String color;
     private final String comment;
     private final Boolean isValid;
+    private final OrderBtnPlace orderBtnPlace;
     private WebDriver driver;
 
 
@@ -43,7 +45,8 @@ public class OrderTest {
             Integer duration,
             String color,
             String comment,
-            Boolean isValid
+            Boolean isValid,
+            OrderBtnPlace orderBtnPlace
     ) {
         this.name = name;
         this.lastName = lastName;
@@ -57,15 +60,16 @@ public class OrderTest {
         this.color = color;
         this.comment = comment;
         this.isValid = isValid;
+        this.orderBtnPlace = orderBtnPlace;
     }
 
     @Parameterized.Parameters
     public static Object[][] getParameters() {
         return new Object[][]{
-                {"Иван", "Иванов", "ул. Ленина, д. 10", "12345678901", 20, 9, 2024, "сентябрь", 1, "black", "no comment", true},
-                {"Иван", "Иванов", "ул. Ленина, д. 10", "+12345678901", 18, 8, 2024, "август", 3, "grey", "коммент по-RUSSки", true},
-                {"Иван", "Иванов", "ул. Ленина, д. 10", "+12345678901", 9, 5, 2025, "май", 7, "both", "", true},
-                {"Иван", "Иванов", "ул. Ленина, д. 10", "12345678901", 9, 5, 2024, "май", 5, "both", "", true},
+                {"Иван", "Иванов", "ул. Ленина, д. 10", "12345678901", 20, 9, 2024, "сентябрь", 1, "black", "no comment", true, OrderBtnPlace.TOP},
+                {"Иван", "Иванов", "ул. Ленина, д. 10", "+12345678901", 18, 8, 2024, "август", 3, "grey", "коммент по-RUSSки", true, OrderBtnPlace.TOP},
+                {"Иван", "Иванов", "ул. Ленина, д. 10", "+12345678901", 9, 5, 2025, "май", 7, "both", "", true, OrderBtnPlace.BOTTOM},
+                {"Иван", "Иванов", "ул. Ленина, д. 10", "12345678901", 9, 5, 2024, "май", 5, "both", "", true, OrderBtnPlace.BOTTOM},
         };
     }
 
@@ -79,19 +83,18 @@ public class OrderTest {
 //        options.addArguments("--no-sandbox", "--disable-dev-shm-usage"); // "--headless",
 //        driver = new FirefoxDriver(options);
 
-        String homePageUrl = "https://qa-scooter.praktikum-services.ru/";
-        String orderPageUrl = "https://qa-scooter.praktikum-services.ru/order";
-        driver.get(homePageUrl);
 
         HomePage homePage = new HomePage(driver);
         OrderPage orderPage = new OrderPage(driver);
 
-        WebElement topOrderButton = homePage.getTopOrderButton();
+        homePage.goToThisPage();
+
+        WebElement topOrderButton = homePage.getOrderButtonByPlace(orderBtnPlace);
         homePage.clickOnOrderButton(topOrderButton);
 
         String location = driver.getCurrentUrl();
 
-        Assert.assertEquals(orderPageUrl, location);
+        Assert.assertEquals(orderPage.getPageUrl(), location);
 
         WebElement nameField = orderPage.getNameField();
         WebElement lastNameField = orderPage.getLastNameField();

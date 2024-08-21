@@ -1,5 +1,6 @@
 package org.horosiyproekt.pages;
 
+import org.horosiyproekt.enums.OrderBtnPlace;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -9,13 +10,12 @@ import java.util.List;
 
 public class HomePage {
     private final WebDriver driver;
+    private final String pageUrl= "https://qa-scooter.praktikum-services.ru/";
     private final By faqSection = By.xpath("//*[contains(@class, 'Home_FAQ')]");
     private final By faqItem = By.className("accordion__item");
     private final By question = By.className("accordion__button");
     private final By answer = By.className("accordion__panel");
     private final By cookieButtonOnBanner = By.id("rcc-confirm-button");
-    private final By homeHeader = By.xpath("//*[contains(@class, 'Home_Header')]");
-    private final By finish_button = By.xpath("//*[contains(@class, 'Home_FinishButton')]");
     private final By orderButton = By.xpath("//*[contains(@class, 'Button_Button')]");
 
     private final WebDriverWait wait;
@@ -29,8 +29,16 @@ public class HomePage {
         return wait.until(driver -> driver.findElement(faqSection));
     }
 
+    public void goToThisPage() {
+        driver.get(pageUrl);
+    }
+
     public List<WebElement> getAccordionItems() {
         return wait.until(ExpectedConditions.presenceOfNestedElementsLocatedBy(faqSection, faqItem));
+    }
+
+    public WebElement getAccordionItemByIndex(Integer index) {
+        return getAccordionItems().get(index);
     }
 
     public WebElement getQuestion(WebElement accordionItem) {
@@ -64,12 +72,8 @@ public class HomePage {
         catch (NoSuchElementException ignored) {}
     }
 
-    public WebElement getTopOrderButton() {
-        return wait.until(ExpectedConditions.presenceOfNestedElementLocatedBy(homeHeader, orderButton));
-    }
-
-    public WebElement getBottomOrderButton() {
-        return wait.until(ExpectedConditions.presenceOfNestedElementLocatedBy(finish_button, orderButton));
+    public WebElement getOrderButtonByPlace(OrderBtnPlace place) {
+        return wait.until(ExpectedConditions.presenceOfNestedElementLocatedBy(place.getLocator(), orderButton));
     }
 
     public void clickOnOrderButton(WebElement orderButton) {

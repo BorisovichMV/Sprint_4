@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 public class OrderPage {
     private final WebDriver driver;
+    private final String pageUrl = "https://qa-scooter.praktikum-services.ru/order";
     private final WebDriverWait wait;
 
     private final By orderFormLocator = By.xpath("//div[contains(@class, 'Order_Form')]");
@@ -52,6 +53,14 @@ public class OrderPage {
     public OrderPage(WebDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(3));
+    }
+
+    public void goToThisPage() {
+        driver.get(pageUrl);
+    }
+
+    public String getPageUrl() {
+        return pageUrl;
     }
 
     public WebElement getNameField() {

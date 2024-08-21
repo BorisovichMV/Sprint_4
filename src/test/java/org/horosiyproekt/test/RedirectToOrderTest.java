@@ -1,55 +1,51 @@
 package org.horosiyproekt.test;
 
+import org.horosiyproekt.enums.OrderBtnPlace;
 import org.horosiyproekt.pages.HomePage;
+import org.horosiyproekt.pages.OrderPage;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
+@RunWith(Parameterized.class)
 public class RedirectToOrderTest {
+    private final OrderBtnPlace buttonPlace;
     private WebDriver driver;
 
-    @Test
-    public void checkRedirectToOrderByClickOnTopOrderButton() {
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--no-sandbox", "--headless", "--disable-dev-shm-usage");
-        driver = new ChromeDriver(options);
+    public RedirectToOrderTest(OrderBtnPlace place) {
+        this.buttonPlace = place;
+    }
 
-        String homePageUrl = "https://qa-scooter.praktikum-services.ru/";
-        String orderPageUrl = "https://qa-scooter.praktikum-services.ru/order";
-        driver.get(homePageUrl);
-
-        HomePage homePage = new HomePage(driver);
-
-        WebElement topOrderButton = homePage.getTopOrderButton();
-        homePage.clickOnOrderButton(topOrderButton);
-
-        String location = driver.getCurrentUrl();
-
-        Assert.assertEquals(orderPageUrl, location);
+    @Parameterized.Parameters
+    public static Object [][] getParameters() {
+        return new Object[][] {
+                { OrderBtnPlace.TOP },
+                { OrderBtnPlace.BOTTOM }
+        };
     }
 
     @Test
-    public void checkRedirectToOrderByClickOnBottomOrderButton() {
+    public void checkRedirectToOrderByClickOnButton() {
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--no-sandbox", "--headless", "--disable-dev-shm-usage");
         driver = new ChromeDriver(options);
 
-        String homePageUrl = "https://qa-scooter.praktikum-services.ru/";
-        String orderPageUrl = "https://qa-scooter.praktikum-services.ru/order";
-        driver.get(homePageUrl);
-
         HomePage homePage = new HomePage(driver);
+        OrderPage orderPage = new OrderPage(driver);
+        homePage.goToThisPage();
 
-        WebElement bottomOrderButton= homePage.getBottomOrderButton();
-        homePage.clickOnOrderButton(bottomOrderButton);
+        WebElement orderButton = homePage.getOrderButtonByPlace(buttonPlace);
+        homePage.clickOnOrderButton(orderButton);
 
         String location = driver.getCurrentUrl();
 
-        Assert.assertEquals(orderPageUrl, location);
+        Assert.assertEquals(orderPage.getPageUrl(), location);
     }
 
     @After
